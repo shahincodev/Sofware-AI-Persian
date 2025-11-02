@@ -1,0 +1,9 @@
+
+# Core runtime
+browser-use>=0.9.1
+python-dotenv>=1.0.0
+playwright>=1.36.0
+pyfiglet>=1.0.4
+
+# Optional (platform helpers)
+pywin32>=305; platform_system == "Windows"
