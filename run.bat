@@ -10,19 +10,19 @@ if not exist "%~dp0.venv\Scripts\python.exe" (
     python -m venv "%~dp0.venv" 2>NUL || python3 -m venv "%~dp0.venv"
 )
 
-REM --- Activate venv ---
+REM --- فعال کردن venv ---
 call "%~dp0.venv\Scripts\activate.bat"
 
 echo Using Python: %~dp0.venv\Scripts\python.exe
 
-REM --- Upgrade pip and install requirements if present ---
+REM --- ارتقاء pip و نصب الزامات در صورت وجود ---
 python -m pip install --upgrade pip
 if exist "%~dp0requirements.txt" (
     echo Installing requirements from requirements.txt...
     python -m pip install -r "%~dp0requirements.txt"
 )
 
-REM --- Create .env from example if missing (will not overwrite existing .env) ---
+REM --- در صورت وجود نداشتن، فایل .env را از مثال ایجاد کنید (فایل .env موجود را رونویسی نمی‌کند) ---
 if not exist "%~dp0.env" (
     if exist "%~dp0.env.example" (
         copy "%~dp0.env.example" "%~dp0.env" >NUL
@@ -32,12 +32,12 @@ if not exist "%~dp0.env" (
     )
 )
 
-REM --- Run the application, forward any arguments ---
+REM --- برنامه را اجرا کنید، آرگومان‌ها را ارسال کنید ---
 echo Launching application...
 python "%~dp0main.py" %*
 
-REM Deactivate (for clarity in interactive sessions)
+REM غیرفعال کردن (برای وضوح در جلسات تعاملی)
 if defined VIRTUAL_ENV (
-    deactivate 2>NUL || REM no-op if deactivate not available
+    deactivate 2>NUL || REM اگر غیرفعال کردن در دسترس نباشد، غیرفعال می‌شود
 )
 exit /B %ERRORLEVEL%

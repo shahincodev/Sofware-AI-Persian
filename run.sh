@@ -6,19 +6,19 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Determine python command (prefer python3)
+# تعیین دستور پایتون (python3 را ترجیح می‌دهم)
 PYTHON_CMD=python3
 if ! command -v "$PYTHON_CMD" >/dev/null 2>&1; then
   PYTHON_CMD=python
 fi
 
-# Create virtualenv if missing
+# در صورت وجود نداشتن virtualenv، آن را ایجاد کنید
 if [ ! -f ".venv/bin/python" ]; then
   echo "Creating virtual environment .venv..."
   "$PYTHON_CMD" -m venv .venv
 fi
 
-# Activate
+# فعال کنید
 # shellcheck source=/dev/null
 source .venv/bin/activate
 
@@ -31,7 +31,7 @@ if [ -f "requirements.txt" ]; then
   python -m pip install -r requirements.txt
 fi
 
-# Copy .env.example to .env if missing
+# اگر فایل .env.example وجود ندارد، آن را در .env کپی کنید.
 if [ ! -f ".env" ]; then
   if [ -f ".env.example" ]; then
     cp .env.example .env
