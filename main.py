@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 tahanilishahin
+
 """
 نقطه ورودی اصلی سیستم نرم‌افزاری هوش مصنوعی.
 این ماژول یک رابط خط فرمان (CLI) برای تعامل با قابلیت‌های اصلی سیستم فراهم می‌کند.

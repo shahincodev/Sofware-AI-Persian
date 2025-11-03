@@ -61,11 +61,20 @@ dmypy.json
 .DS_Store
 Thumbs.db
 
-# dotenv
+# Environment variables and secrets
 .env
+*.key
+*.pem
+credentials.json
+token.json
+secrets.yaml
+*.secret
+.secrets/
 
-# sqlite
+# Database files
 *.sqlite3
+*.db
+*.db-journal
 
 # logs
 *.log

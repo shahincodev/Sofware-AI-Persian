@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 tahanilishahin
+
 """Factory برای ساخت Agent یا CodeAgent با تنظیمات امن‌تر.
 
 تغییرات کلیدی:
