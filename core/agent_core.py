@@ -47,7 +47,7 @@ def create_agent(task: str, mode: str = "browser") -> Agent | CodeAgent:
         llm=llm,
         browser=browser,
         max_steps=20,
-        use_vision=True,
+        use_vision=False,
         flash_mode=(mode == "fast"),
         sensitive_data={"session_key": session_key} if session_key else None,
         available_file_paths=available_paths,
