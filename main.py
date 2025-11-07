@@ -87,7 +87,7 @@ def print_banner(text="Sofware-AI", font="standard", color=Fore.CYAN) -> None:
 
 async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mode: str) -> None:
     """پردازش ورودی کاربر در یک حلقه تعاملی."""
-    print_banner("Sofware-AI", font="ANSI Shadow", color=Fore.MAGENTA)
+    print_banner("Sofware-AI", font="standard", color=Fore.MAGENTA)
     print("\n Be Systeme Narm Afzarie Hooshe Masnoee Sofware-AI Khosh Amadid !")
     print("Task haaye khod ra vared konid (har task dar yek khat). Baraye khorooj az Ctrl+C estefade konid.\n")
 
