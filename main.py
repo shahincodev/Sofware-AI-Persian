@@ -25,8 +25,8 @@ from core.task_engine import TaskEngine
 from dotenv import load_dotenv
 
 colorama_init(autoreset=True) # در ویندوز، فعال کردن مدیریت ANSI
-with open('banner.txt', 'r') as file:
-    banner = file.read 
+with open('banner.txt', 'r', encoding='utf-8') as file:
+    banner = file.read()
 
 # پیکربندی سیستم لاگ
 logging.basicConfig(
@@ -77,15 +77,22 @@ def parse_arguments() -> argparse.Namespace:
 
     return parser.parse_args()
 
-def print_banner(text=banner,color=Fore.WHITE) -> None:
+def print_banner(text=banner, color=Fore.WHITE) -> None:
     """چاپ بنر خوش‌آمدگویی در CLI."""
-    f = Figlet(text)
-    banner = f.renderText(text)
     term_width = shutil.get_terminal_size((80, 20)).columns
-    # هر خط را در مرکز قرار دهید
-    lines = banner.splitlines()
-    for line in lines:
-        print(color + line.center(term_width) + Style.RESET_ALL)
+    
+    try:
+        f = Figlet(font='standard')  # استفاده از فونت استاندارد
+        banner_text = f.renderText(str(text))  # تبدیل به رشته برای اطمینان
+        for line in banner_text.splitlines():
+            print(color + line.center(term_width) + Style.RESET_ALL)
+    except Exception as e:
+        logger.error(f"Khata dar Namayeshe Banner: {str(e)}")
+        # در صورت خطا، متن ساده را نمایش می‌دهیم
+        if isinstance(text, str):
+            print(color + text.center(term_width) + Style.RESET_ALL)
+        else:
+            print(color + str(text).center(term_width) + Style.RESET_ALL)
 
 async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mode: str) -> None:
     """پردازش ورودی کاربر در یک حلقه تعاملی."""
