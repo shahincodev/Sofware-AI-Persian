@@ -82,17 +82,18 @@ def print_banner(text=banner, color=Fore.WHITE) -> None:
     term_width = shutil.get_terminal_size((80, 20)).columns
     
     try:
-        f = Figlet(font='standard')  # استفاده از فونت استاندارد
-        banner_text = f.renderText(str(text))  # تبدیل به رشته برای اطمینان
-        for line in banner_text.splitlines():
-            print(color + line.center(term_width) + Style.RESET_ALL)
+        # اگر متن از قبل ASCII art است، مستقیماً آن را نمایش می‌دهیم
+        lines = str(text).splitlines()
+        for line in lines:
+            # محاسبه فاصله لازم برای مرکز قرار دادن متن
+            padding = (term_width - len(line)) // 2
+            if padding > 0:
+                print(color + " " * padding + line + Style.RESET_ALL)
+            else:
+                print(color + line + Style.RESET_ALL)
     except Exception as e:
         logger.error(f"Khata dar Namayeshe Banner: {str(e)}")
-        # در صورت خطا، متن ساده را نمایش می‌دهیم
-        if isinstance(text, str):
-            print(color + text.center(term_width) + Style.RESET_ALL)
-        else:
-            print(color + str(text).center(term_width) + Style.RESET_ALL)
+        print(color + str(text) + Style.RESET_ALL)
 
 async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mode: str) -> None:
     """پردازش ورودی کاربر در یک حلقه تعاملی."""
