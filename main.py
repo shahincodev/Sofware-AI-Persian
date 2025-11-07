@@ -25,6 +25,8 @@ from core.task_engine import TaskEngine
 from dotenv import load_dotenv
 
 colorama_init(autoreset=True) # در ویندوز، فعال کردن مدیریت ANSI
+with open('banner.txt', 'r') as file:
+    banner = file.read 
 
 # پیکربندی سیستم لاگ
 logging.basicConfig(
@@ -75,9 +77,9 @@ def parse_arguments() -> argparse.Namespace:
 
     return parser.parse_args()
 
-def print_banner(text="Sofware-AI", font="slant", color=Fore.RED) -> None:
+def print_banner(text=banner,color=Fore.WHITE) -> None:
     """چاپ بنر خوش‌آمدگویی در CLI."""
-    f = Figlet(font=font)
+    f = Figlet(text)
     banner = f.renderText(text)
     term_width = shutil.get_terminal_size((80, 20)).columns
     # هر خط را در مرکز قرار دهید
@@ -87,7 +89,7 @@ def print_banner(text="Sofware-AI", font="slant", color=Fore.RED) -> None:
 
 async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mode: str) -> None:
     """پردازش ورودی کاربر در یک حلقه تعاملی."""
-    print_banner("Sofware-AI", font="slant", color=Fore.RED)
+    print_banner(banner, color=Fore.WHITE)
     print("\n Be Systeme Narm Afzarie Hooshe Masnoee Sofware-AI Khosh Amadid !")
     print("Task haaye khod ra vared konid (har task dar yek khat). Baraye khorooj az Ctrl+C estefade konid.\n")
 
