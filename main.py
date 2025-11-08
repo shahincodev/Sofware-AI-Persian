@@ -77,7 +77,7 @@ def parse_arguments() -> argparse.Namespace:
 
     return parser.parse_args()
 
-def print_banner(text=banner, color=Fore.WHITE) -> None:
+def print_banner(text=banner, color=Fore.CYAN) -> None:
     """چاپ بنر خوش‌آمدگویی در CLI."""
     term_width = shutil.get_terminal_size((80, 20)).columns
     
@@ -97,7 +97,7 @@ def print_banner(text=banner, color=Fore.WHITE) -> None:
 
 async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mode: str) -> None:
     """پردازش ورودی کاربر در یک حلقه تعاملی."""
-    print_banner(banner, color=Fore.WHITE)
+    print_banner(banner, color=Fore.CYAN)
     print("\n Be Systeme Narm Afzarie Hooshe Masnoee Sofware-AI Khosh Amadid !")
     print("Task haaye khod ra vared konid (har task dar yek khat). Baraye khorooj az Ctrl+C estefade konid.\n")
 
