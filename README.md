@@ -32,6 +32,19 @@ python -m venv .venv
 # نصب وابستگی‌ها
 pip install -r requirements.txt
 
+# (اختیاری) اگر می‌خواهید قابلیت صوتی را فعال کنید، بسته‌های زیر را نصب کنید:
+#
+# ```bash
+# pip install SpeechRecognition pyttsx3 pyaudio
+# ```
+#
+# نکته: در ویندوز نصب `pyaudio` گاهی با خطا روبه‌رو می‌شود؛ در این حالت می‌توانید از `pipwin` استفاده کنید:
+#
+# ```powershell
+# pip install pipwin
+# pipwin install pyaudio
+# ```
+
 # کپی و ویرایش فایل .env
 cp .env.example .env
 # حالا فایل .env را باز کنید و API keyها را وارد کنید
@@ -72,6 +85,8 @@ chmod +x run.sh  # فقط بار اول
 - بنر خوش‌آمدگویی در CLI (با ASCII art) برای ظاهر کاربرپسندتر.
 - اسکریپت‌های آماده: `run.bat` برای ویندوز و `run.sh` برای یونیکس/WSL که محیط مجازی می‌سازن، وابستگی‌ها رو نصب می‌کنن و برنامه رو اجرا می‌کنن.
 - فایل نمونهٔ متغیرهای محیطی: `.env.example` برای راهنمایی در قرار دادن API keyها.
+
+ - پشتیبانی از ورودی/خروجی صوتی (Speech-to-Text و Text-to-Speech) به‌صورت اختیاری با استفاده از flag `--input-mode voice`.
 
 ---
 
@@ -149,11 +164,18 @@ python main.py
   - `--mode` : حالت اجرا، مقدار ممکن `browser` یا `code` (پیش‌فرض `browser`).
   - `--concurrency` : تعداد تسک‌های همزمان (مثلاً `--concurrency 3`).
   - `--debug` : فعال کردن لاگ‌های دیباگ برای عیب‌یابی.
+  - `--input-mode` : انتخاب نوع ورودی؛ `text` برای کیبورد یا `voice` برای میکروفون (پیش‌فرض `text`).
 
 مثال:
 
 ```
 python main.py --mode code --concurrency 5
+```
+
+مثال استفاده از حالت صوتی:
+
+```
+python main.py --input-mode voice --mode browser
 ```
 
 5) پر کردن فایل `.env`
