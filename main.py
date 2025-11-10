@@ -25,20 +25,13 @@ from core.memory_system import MemoryManager
 from core.task_engine import TaskEngine
 from core.voice_io import VoiceManager
 from dotenv import load_dotenv
+from core.logging_config import setup_logging, install_exception_hook
 
 colorama_init(autoreset=True) # در ویندوز، فعال کردن مدیریت ANSI
 with open('banner.txt', 'r', encoding='utf-8') as file:
     banner = file.read()
 
-# پیکربندی سیستم لاگ
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler(Path("data/logs/app.log"))
-    ]
-)
+# logging configuration will be initialized at startup (see `setup_logging`)
 logger = logging.getLogger(__name__)
 
 def setup_environment() -> None:
@@ -233,8 +226,9 @@ async def main() -> None:
         # راه‌اندازی محیط
         setup_environment()
 
-        if args.debug:
-            logging.getLogger().setLevel(logging.DEBUG)
+        # Initialize logging after environment is prepared. Respect --debug flag
+        setup_logging(level=logging.DEBUG if args.debug else None)
+        install_exception_hook()
 
         # راه‌اندازی اجزای اصلی
         task_engine = TaskEngine(concurrency=args.concurrency)
