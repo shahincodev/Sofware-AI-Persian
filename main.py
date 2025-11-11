@@ -122,7 +122,7 @@ async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mod
                     if input_mode == "voice":
                         user_input = voice.listen(timeout=7)
                         if not user_input:
-                            print("ورودی صوتی دریافت نشد، لطفاً دوباره تلاش کنید.")
+                            print("verodi soti daryaft neshod, lotfan dobareh talash konid.")
                             continue
                     else:
                         user_input = input("Taske Jadid > ").strip()
@@ -143,7 +143,7 @@ async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mod
                     # پرسش برای افزودن تسک بیشتر یا شروع اجرا
 
                     if input_mode == "voice":
-                        voice.speak("آیا تسک دیگری دارید؟ برای افزودن تسک جدید بگویید بله یا برای ادامه سکوت کنید.")
+                        voice.speak("Do you have another task? Say yes to add a new task or remain silent to continue.")
                         choice = voice.listen(timeout=5)
                         if choice and ("بله" in choice or "yes" in choice.lower()):
                             continue
@@ -163,7 +163,7 @@ async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mod
 
             if not task_engine.queue:
                 if input_mode == "voice":
-                    voice.speak("هیچ تسکی اضافه نشده است. آیا می‌خواهید ادامه دهید؟ اگر نه بگویید نه.")
+                    voice.speak("No tasks have been added. Do you want to continue? If not, say no.")
                     cont = voice.listen(timeout=5)
                     if cont and ("نه" in cont or "no" in cont.lower()):
                         break
@@ -204,7 +204,7 @@ async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mod
             # بپرسید که آیا کاربر می‌خواهد وظایف بیشتری اضافه کند یا اجرا کند
 
             if input_mode == "voice":
-                voice.speak("آیا می‌خواهید تسک‌های بیشتری اضافه کنید یا اجرا کنید؟ اگر نه بگویید نه.")
+                voice.speak("Do you want to add or run more tasks? If not, say no.")
                 cont = voice.listen(timeout=5)
                 if cont and ("نه" in cont or "no" in cont.lower()):
                     break

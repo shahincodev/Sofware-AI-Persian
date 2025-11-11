@@ -106,7 +106,7 @@ class VoiceOutput:
         
         Args:
             tts_provider: انتخاب سرویس TTS
-                - "google-cloud": Google Cloud Text-to-Speech (نیاز به اعتبارنامه)
+                - "google-cloud": Google Cloud Text-to-Speech (niaz be etebarname)
                 - "gtts": gTTS سرویس رایگان
         """
         self.tts_provider = tts_provider
@@ -129,7 +129,7 @@ class VoiceOutput:
             )
             logger.info("TTS Provider: Google Cloud Text-to-Speech")
         else:
-            logger.info("TTS Provider: gTTS (رایگان)")
+            logger.info("TTS Provider: gTTS (rayegan)")
         
         self._start_speaker_thread()
 
@@ -174,7 +174,7 @@ class VoiceOutput:
             return audio_bytes
         except Exception as e:
             # اگر زبان فارسی کار نکرد، سعی کنیم با انگلیسی
-            logger.warning(f"خطا در gTTS برای فارسی: {str(e)}")
+            logger.warning(f"khata dar gTTS baraye farsi: {str(e)}")
             try:
                 tts = gTTS(text=text, lang='en', slow=False)
                 tts.save(temp_mp3)
@@ -182,7 +182,7 @@ class VoiceOutput:
                     audio_bytes = f.read()
                 return audio_bytes
             except Exception as fallback_error:
-                logger.error(f"خطا در gTTS حتی برای انگلیسی: {str(fallback_error)}")
+                logger.error(f"khata dar gTTS hati baraye english: {str(fallback_error)}")
                 raise
         finally:
             # پاک‌سازی فایل موقت
