@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: NOASSERTION
-# Copyright (c) 2025 TahaNili (Shahin)
+# Copyright (c) 2025 Shahin
 
 """
 نقطه ورودی اصلی سیستم نرم‌افزاری هوش مصنوعی.
