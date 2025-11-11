@@ -227,8 +227,8 @@ class VoiceOutput:
                                  stderr=subprocess.DEVNULL,
                                  timeout=30)
                 except Exception as play_error:
-                    logger.warning(f"ffplay موجود نیست یا کار نکرد: {str(play_error)}")
-                    logger.info("برای پخش صحیح ffmpeg را نصب کنید: choco install ffmpeg")
+                    logger.warning(f"ffplay mojod nist ya kar nakard:\n{str(play_error)}")
+                    logger.info("baraye pakhsh sahih ffmpeg ra nasb konid: choco install ffmpeg")
             finally:
                 if os.path.exists(temp_mp3):
                     os.remove(temp_mp3)
@@ -262,7 +262,7 @@ class VoiceOutput:
                     is_mp3 = self.tts_provider == "gtts"
                     self._play_audio(audio_content, is_mp3=is_mp3)
                 except Exception as e:
-                    logger.error(f"خطا در پخش گفتار: {str(e)}")
+                    logger.error(f"khata dar pokhsh goftar:\n{str(e)}")
                 finally:
                     self.is_speaking = False
                     self.speaking_queue.task_done()
@@ -282,7 +282,7 @@ class VoiceOutput:
             if block:
                 self.speaking_queue.join()
         except Exception as e:
-            logger.error(f"خطا در افزودن متن به صف گفتار: {str(e)}")
+            logger.error(f"khata dar afzoodan matn be saf goftar: {str(e)}")
 
     def stop_speaking(self) -> None:
         """توقف فوری گفتار فعلی و پاک‌سازی صف"""
@@ -297,7 +297,7 @@ class VoiceOutput:
             if os.path.exists(self.temp_dir):
                 os.rmdir(self.temp_dir)
         except Exception as e:
-            logger.error(f"خطا در خاموش کردن موتور: {str(e)}")
+            logger.error(f"khata dar khamosh kardan motor: {str(e)}")
 
 class VoiceManager:
     """مدیریت یکپارچه ورودی و خروجی صوتی"""
