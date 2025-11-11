@@ -11,11 +11,14 @@ import queue
 import threading
 import logging
 import tempfile
-from typing import Optional, Callable, Any, cast
+from typing import Optional, Callable, Any, cast, Literal
 import speech_recognition as sr
 from google.cloud import texttospeech
+from gtts import gTTS
 import sounddevice as sd
 import soundfile as sf
+from pydub import AudioSegment
+import io
 
 logger = logging.getLogger(__name__)
 
@@ -90,26 +93,46 @@ class VoiceInput:
         self.is_listening = False
 
 class VoiceOutput:
-    """کلاس مدیریت خروجی صوتی (تبدیل متن به گفتار با Google Cloud)"""
-    def __init__(self) -> None:
-        """مقداردهی اولیه موتور تبدیل متن به گفتار"""
-        self.client = texttospeech.TextToSpeechClient()
-        self.voice = texttospeech.VoiceSelectionParams(
-            language_code="fa-IR",
-            name="fa-IR-Standard-A"
-        )
-        self.audio_config = texttospeech.AudioConfig(
-            audio_encoding=texttospeech.AudioEncoding.LINEAR16,
-            speaking_rate=1.0,
-            pitch=0.0,
-            volume_gain_db=0.0
-        )
+    """کلاس مدیریت خروجی صوتی (تبدیل متن به گفتار)
+    
+    این کلاس از دو سرویس TTS پشتیبانی می‌کند:
+    - Google Cloud TTS (google-cloud): کیفیت بالاتر، پرداختی
+    - gTTS (gtts): رایگان، کیفیت معقول
+    """
+    
+    def __init__(self, tts_provider: Literal["google-cloud", "gtts"] = "google-cloud") -> None:
+        """مقداردهی اولیه موتور تبدیل متن به گفتار
+        
+        Args:
+            tts_provider: انتخاب سرویس TTS
+                - "google-cloud": Google Cloud Text-to-Speech (نیاز به اعتبارنامه)
+                - "gtts": gTTS سرویس رایگان
+        """
+        self.tts_provider = tts_provider
         self.speaking_queue = queue.Queue()
         self.is_speaking = False
         self.temp_dir = tempfile.mkdtemp()
+        
+        # مقداردهی سرویس Google Cloud (اگر استفاده شود)
+        if self.tts_provider == "google-cloud":
+            self.client = texttospeech.TextToSpeechClient()
+            self.voice = texttospeech.VoiceSelectionParams(
+                language_code="fa-IR",
+                name="fa-IR-Standard-A"
+            )
+            self.audio_config = texttospeech.AudioConfig(
+                audio_encoding=texttospeech.AudioEncoding.LINEAR16,
+                speaking_rate=1.0,
+                pitch=0.0,
+                volume_gain_db=0.0
+            )
+            logger.info("TTS Provider: Google Cloud Text-to-Speech")
+        else:
+            logger.info("TTS Provider: gTTS (رایگان)")
+        
         self._start_speaker_thread()
 
-    def _synthesize_speech(self, text: str) -> bytes:
+    def _synthesize_speech_google_cloud(self, text: str) -> bytes:
         """تبدیل متن به صدا با استفاده از Google Cloud TTS
         
         Args:
@@ -126,20 +149,79 @@ class VoiceOutput:
         )
         return response.audio_content
 
-    def _play_audio(self, audio_content: bytes) -> None:
+    def _synthesize_speech_gtts(self, text: str) -> bytes:
+        """تبدیل متن به صدا با استفاده از gTTS
+        
+        Args:
+            text: متن برای تبدیل به گفتار
+            
+        Returns:
+            داده‌های صوتی به صورت bytes
+        """
+        temp_mp3 = os.path.join(self.temp_dir, "temp_gtts.mp3")
+        try:
+            # ایجاد و ذخیره فایل صوتی gTTS
+            tts = gTTS(text=text, lang='fa', slow=False)
+            tts.save(temp_mp3)
+            
+            # خواندن فایل MP3 و تبدیل به bytes
+            with open(temp_mp3, 'rb') as f:
+                audio_bytes = f.read()
+            
+            return audio_bytes
+        finally:
+            # پاک‌سازی فایل موقت
+            if os.path.exists(temp_mp3):
+                os.remove(temp_mp3)
+
+    def _synthesize_speech(self, text: str) -> bytes:
+        """تبدیل متن به صدا با استفاده از سرویس انتخاب‌شده
+        
+        Args:
+            text: متن برای تبدیل به گفتار
+            
+        Returns:
+            داده‌های صوتی به صورت bytes
+        """
+        if self.tts_provider == "google-cloud":
+            return self._synthesize_speech_google_cloud(text)
+        else:
+            return self._synthesize_speech_gtts(text)
+
+    def _play_audio(self, audio_content: bytes, is_mp3: bool = False) -> None:
         """پخش صدا با استفاده از sounddevice
         
         Args:
             audio_content: داده‌های صوتی به صورت bytes
+            is_mp3: آیا فرمت صوتی MP3 است (برای gTTS)
         """
-        temp_file = os.path.join(self.temp_dir, "temp_speech.wav")
-        with open(temp_file, "wb") as f:
-            f.write(audio_content)
-        
-        data, samplerate = sf.read(temp_file)
-        sd.play(data, samplerate)
-        sd.wait()
-        os.remove(temp_file)
+        if is_mp3:
+            # برای gTTS که MP3 است، استفاده از pydub برای تبدیل به WAV
+            
+            temp_wav = os.path.join(self.temp_dir, "temp_audio.wav")
+            try:
+                # تبدیل MP3 به WAV
+                audio = AudioSegment.from_mp3(io.BytesIO(audio_content))
+                audio.export(temp_wav, format="wav")
+                
+                # خواندن و پخش فایل WAV
+                data, samplerate = sf.read(temp_wav)
+                sd.play(data, samplerate)
+                sd.wait()
+            finally:
+                if os.path.exists(temp_wav):
+                    os.remove(temp_wav)
+        else:
+            # برای Google Cloud که WAV است
+            temp_wav = os.path.join(self.temp_dir, "temp_speech.wav")
+            with open(temp_wav, "wb") as f:
+                f.write(audio_content)
+            
+            data, samplerate = sf.read(temp_wav)
+            sd.play(data, samplerate)
+            sd.wait()
+            os.remove(temp_wav)
+
     def _start_speaker_thread(self) -> None:
         """راه‌اندازی thread مدیریت صف گفتار"""
         def speaker_thread():
@@ -148,11 +230,15 @@ class VoiceOutput:
                     text = self.speaking_queue.get()
                     if text is None:  # سیگنال توقف
                         break
+                    
                     self.is_speaking = True
                     audio_content = self._synthesize_speech(text)
-                    self._play_audio(audio_content)
+                    
+                    # تعیین فرمت صوتی بر اساس سرویس
+                    is_mp3 = self.tts_provider == "gtts"
+                    self._play_audio(audio_content, is_mp3=is_mp3)
                 except Exception as e:
-                    logger.error(f"khata dar pokhsh goftar: {str(e)}")
+                    logger.error(f"خطا در پخش گفتار: {str(e)}")
                 finally:
                     self.is_speaking = False
                     self.speaking_queue.task_done()
@@ -172,7 +258,7 @@ class VoiceOutput:
             if block:
                 self.speaking_queue.join()
         except Exception as e:
-            logger.error(f"khata dar afzodane matn be safhe goftar: {str(e)}")
+            logger.error(f"خطا در افزودن متن به صف گفتار: {str(e)}")
 
     def stop_speaking(self) -> None:
         """توقف فوری گفتار فعلی و پاک‌سازی صف"""
@@ -187,15 +273,21 @@ class VoiceOutput:
             if os.path.exists(self.temp_dir):
                 os.rmdir(self.temp_dir)
         except Exception as e:
-            logger.error(f"Khataye dar khamosh shodan motor: {str(e)}")
+            logger.error(f"خطا در خاموش کردن موتور: {str(e)}")
 
 class VoiceManager:
     """مدیریت یکپارچه ورودی و خروجی صوتی"""
 
-    def __init__(self) -> None:
-        """مقداردهی اولیه مدیر صوتی"""
+    def __init__(self, tts_provider: Literal["google-cloud", "gtts"] = "google-cloud") -> None:
+        """مقداردهی اولیه مدیر صوتی
+        
+        Args:
+            tts_provider: انتخاب سرویس TTS
+                - "google-cloud": Google Cloud Text-to-Speech
+                - "gtts": gTTS رایگان
+        """
         self.voice_input = VoiceInput()
-        self.voice_output = VoiceOutput()
+        self.voice_output = VoiceOutput(tts_provider=tts_provider)
 
     def listen(self, timeout: Optional[int] = None) -> str:
         """گوش دادن یک‌باره به ورودی صوتی

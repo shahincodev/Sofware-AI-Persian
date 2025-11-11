@@ -70,10 +70,16 @@ def parse_arguments() -> argparse.Namespace:
         help="فعال‌سازی لاگ‌های دیباگ"
     )
     parser.add_argument(
-    "--input-mode",
-    choices=["text", "voice"],
-    default="text",
-    help="انتخاب نوع ورودی: 'text' برای کیبورد، 'voice' برای میکروفون"
+        "--input-mode",
+        choices=["text", "voice"],
+        default="text",
+        help="انتخاب نوع ورودی: 'text' برای کیبورد، 'voice' برای میکروفون"
+    )
+    parser.add_argument(
+        "--tts-provider",
+        choices=["google-cloud", "gtts"],
+        default="gtts",
+        help="انتخاب سرویس تبدیل متن به گفتار: 'google-cloud' (پولی، کیفیت بالا) یا 'gtts' (رایگان)"
     )
 
     return parser.parse_args()
@@ -233,7 +239,7 @@ async def main() -> None:
         # راه‌اندازی اجزای اصلی
         task_engine = TaskEngine(concurrency=args.concurrency)
         memory = MemoryManager()
-        voice = VoiceManager()
+        voice = VoiceManager(tts_provider=args.tts_provider)
 
         # پردازش ورودی کاربر و اجرای تسک‌ها
         await process_user_input(task_engine, memory, args.mode, args.input_mode, voice)
