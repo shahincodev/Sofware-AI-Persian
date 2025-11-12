@@ -67,8 +67,8 @@ class TaskEngine:
             except Exception:
                 result = str(history)
 
-            logger.info("✅ Done: %s", task)
+            logger.info("✅ Anham-Shod: %s", task)
             return result
         except Exception as exc:
-            logger.exception("❌ Failed: %s", task)
+            logger.exception("❌ Shekast-Khord: %s", task)
             return None

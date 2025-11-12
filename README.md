@@ -217,7 +217,7 @@ python main.py --input-mode voice --mode browser
 
 مشخصات حق نشر و تماس:
 
-- مالک حق نشر: TahaNili (Shahin)
+- مالک حق نشر Shahin
 - سال: 2025
 - ارتباط:
   - GitHub: https://github.com/shahincodev

@@ -47,10 +47,10 @@ class AIBrain:
 
                 model = ChatOpenAI(model=os.getenv("OPENAI_MODEL", "openai/gpt-4o-mini"),
                                     temperature=float(os.getenv("MODEL_TEMPERATURE", "0")))
-            logger.info("Loaded model: %s", name)
+            logger.info("Model Hoshe Masnoii Load Shod: %s", name)
             return model
         except Exception as exc:
-            logger.exception("Failed to load model %s: %s", name, exc)
+            logger.exception("Khataye dar load kardan model %s: %s", name, exc)
             raise
 
     def get_model(self, purpose: str) -> Any:

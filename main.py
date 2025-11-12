@@ -108,7 +108,7 @@ async def process_user_input(task_engine: TaskEngine, memory: MemoryManager, mod
     print_banner(banner, color=Fore.CYAN)
     # خوش‌آمدگویی صوتی اگر حالت voice انتخاب شده باشد
     if input_mode == "voice":
-        voice.speak("سلام! به سامانه هوش مصنوعی خوش آمدید.", block=True)
+        voice.speak("Hello! Welcome to the Artificial Intelligence System.", block=True)
     print("\n Be Systeme Narm Afzarie Hooshe Masnoee Sofware-AI Khosh Amadid !")
     print("Task haaye khod ra vared konid (har task dar yek khat). Baraye khorooj az Ctrl+C estefade konid.\n")
 

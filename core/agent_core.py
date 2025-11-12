@@ -42,6 +42,26 @@ def create_agent(task: str, mode: str = "browser") -> Agent | CodeAgent:
     # مسیرهای مجاز برای agent (در صورت نیاز، می‌توانید تنظیمات را از فایل یا env بخوانید)
     available_paths = [str(Path("./data").resolve())]
 
+    # اگر agent_class یک ماژول است (مثلاً به‌خاطر import اشتباه)، تلاش کنیم کلاس مناسب را از درون ماژول استخراج کنیم
+    if not callable(agent_class):
+        module = agent_class
+        cls = None
+        # اولویت به اسامی شناخته‌شده بدهیم
+        for name in ("CodeAgent", "Agent"):
+            cls = getattr(module, name, None)
+            if cls and callable(cls):
+                agent_class = cls
+                break
+        # اگر هنوز پیدا نشده، اولین نوع تعریف‌شده در ماژول را بردار
+        if not callable(agent_class):
+            for attr in dir(module):
+                obj = getattr(module, attr)
+                if isinstance(obj, type):
+                    agent_class = obj
+                    break
+        if not callable(agent_class):
+            raise TypeError(f"agent_class ({module!r}) is not callable and no suitable class was found in the module")
+
     agent = agent_class(
         task=task,
         llm=llm,
