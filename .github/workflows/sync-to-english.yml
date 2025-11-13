@@ -27,7 +27,7 @@ jobs:
 
       - name: Push to English Repository
         run: |
-          git push english main --force
+          git push english main
 
       - name: Notify on Success
         run: |
